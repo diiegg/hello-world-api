@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-api
+  labels:
+    app: hello-world-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-world-api
+  template:
+    metadata:
+      labels:
+        app: hello-world-api
+    spec:
+      hostname: hello-world-api
+      containers:
+      - name: hello-world-api
+        image: zios07/hello-world-api:0.0.1
+        ports:
+        - containerPort: 8787
+        env:
+          - name: POSTGRES_HOST
+            value: postgres
+        resources:
+          limits:
+            cpu: ".2"
+            memory: "256Mi"
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      hostname: postgres
+      containers:
+      - name: postgres
+        image: postgres
+        ports:
+        - containerPort: 5432
+        env:
+          - name: POSTGRES_PASSWORD
+            value: postgres
+          - name: POSTGRES_DB
+            value: hello-world-db
+        resources:
+          limits:
+            cpu: ".1"
+            memory: "256Mi"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+  - name: "5432"
+    port: 5432
+    targetPort: 5432
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-api
+spec:
+  selector:
+    app: hello-world-api
+  type: NodePort
+  ports:
+  - name: "8787"
+    port: 8787
+    nodePort: 30001

@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/hello-world-db
+    username: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+        ddl-auto: update
+    properties:
+        hibernate:
+            dialect: org.hibernate.dialect.PostgreSQL94Dialect
+            
+            
+server:
+   port: 8787
